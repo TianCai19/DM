@@ -10,10 +10,25 @@
 
 
 
-## knowledge map
+## knowledge map 
+
+> only visible on [typora](https://mermaid-js.github.io/mermaid/#/README)
+
+1. perception
 
 ```mermaid
 graph LR
-   A-. text .-> B
+   py-.code language.-> cp[code of perception]
+	np-.math operater of vector.->py[python]
+	plot -.Visualisation.->py
+	bs[basic syntex]-.easy use.->py
+   kn[knowledge]-.nature of math.->cp
+   re[regular form]-->kn
+   pa[pairform]-.a fast way.->kn
+   cl[class]-->bs
+   
+   
 ```
+
+
 
