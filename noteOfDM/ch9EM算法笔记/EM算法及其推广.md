@@ -1,7 +1,9 @@
->author:平平无奇一个对这个世界很好奇的小白罢了
+>author:平平无奇一个对这个世界很好奇的小白罢了：CodeOnce
+
 >time:2021年5月10日
 
->学习资料：本次学习中的参考资料
+
+学习资料：本次学习中的参考资料
 
 1. 知乎：[EM算法详解](https://zhuanlan.zhihu.com/p/40991784)
 2. wikipedia:[Maximum likelihood estimation](https://en.wikipedia.org/wiki/Maximum_likelihood_estimation)
@@ -50,6 +52,14 @@ $${\begin{aligned}0&={\frac {\partial }{\partial \mu }}\log {\Bigl (}{\mathcal {
 where ${\bar {x}}$ is the sample mean. This is solved by
 
 ${\widehat {\mu }}={\bar {x}}=\sum _{i=1}^{n}{\frac {\,x_{i}\,}{n}}.$\,x_{i}\,}{n}}.}
+
+### Jensen不等式
+设f是定义域为实数的函数，如果对所有的实数x，f(x)的二阶导数都大于0，那么f是凸函数。
+
+Jensen不等式定义如下：
+
+如果f是凸函数，X是随机变量，那么： $E[f(x)]>=f(E[x])$ 。当且仅当X是常量时，该式取等号。其中，E(X)表示X的数学期望。
+![](2021-05-13-10-39-26.png)
 
 ## EM算法
 
@@ -192,7 +202,7 @@ Q(\theta\ ,\theta^{i})=Ez[logP(Y,Z\mid \theta)\mid Y ,\theta^{(i)})]$$
 >Q 函数(Q function) is the key point of EM
 $$
 =\sum_{Z}log P(Y,Z\mid \theta)P(Z\mid Y,\theta^{(i)})$$
-> $P(Z\mid Y,\theta)^{(i)}$表示的是在$\theta^{(i)}$和$Y$给定情况下$Z$的改了吧
+> $P(Z\mid Y,\theta)^{(i)}$表示的是在$\theta^{(i)}$和$Y$给定情况下$Z$的概率
 
 (3)M步：
 求使$Q(\theta,\theta^{(i)})$极大化的$\theta$ 确定第i+1次迭代的参数的估计值
@@ -210,5 +220,20 @@ Q(\theta\ ,\theta^{i})=Ez[logP(Y,Z\mid \theta)\mid Y ,\theta^{(i)})]$$
 
 步骤(2) E步求$Q(\theta,\theta^{(i)})$。Q函数中Z是未观测数据，Y是观测数据，$Q(\theta,\theta^{(i)})$ 的第一个参数表示要极大化的参数，第二个变元表示参数的当前值，每次迭代实际在求
 
-步骤(3) M步求$Q(\theta,\theta^{(i)})$ 的极大化，得到$\theta^{(i)})$
+步骤(3) M步求$Q(\theta,\theta^{(i)})$ 的极大化，得到$\theta^{(i)})$,完成一次迭代$\theta^{(i)}\Rrightarrow \theta^{(i+1)}$
 
+步骤(3) 迭代步骤停止的条件：一般是 对较小的正数，若满足
+$$
+\theta^{(i)}- \theta^{(i+1)}  <\delta_1$$
+$$
+Q(\theta^{(i+1)} ,\theta^{i})-Q(\theta^{(i)} ,\theta^{i-1})<\delta_2$$
+
+<!-- todo:EM算法的math principle -->
+
+
+## EM算法的导出
+
+
+## EM 算法计算实例
+ppT
+计算器使用要熟练
