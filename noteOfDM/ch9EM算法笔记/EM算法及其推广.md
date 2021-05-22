@@ -10,20 +10,26 @@
 3. 《统计学习方法》李航 第二版
 
 ## 1.摘要
+>wiki:最大期望算法（Expectation-maximization algorithm，又译期望最大化算法）在统计中被用于寻找，依赖于不可观察的隐性变量的概率模型中，参数的最大似然估计。
+>
+>在统计计算中，最大期望（EM）算法是在概率模型中寻找参数最大似然估计或者最大后验估计的算法，其中概率模型依赖于无法观测的隐变量。最大期望算法经常用在机器学习和计算机视觉的数据聚类（Data Clustering）领域。最大期望算法经过两个步骤交替进行计算，第一步是计算期望（E），利用对隐藏变量的现有估计值，计算其最大似然估计值；第二步是最大化（M），最大化在E步上求得的最大似然值来计算参数的值。M步上找到的参数估计值被用于下一个E步计算中，这个过程不断交替进行。
+
 * EM算法通迭代求数似然函数 $L(\theta)=log(P(Y|\theta))$的极大似然估计。每次迭代包含两步，E步：求期望。M步：求极大化。
-* EM 算法是 时代案发之一，很重要
+* EM 算法是 十大算法之一，很重要
 * 需要用大极大似然估计（MLE）的思想，需要先了解一些基本的例子。
+
+## 预备知识
+### 概率 
 * 使用很多概率的内容。多元条件概率的形式要把握清楚。比如这个样子
 ${\mathcal{L}}(\mu,\sigma)=f(x_1,\dots,x_n \mid \mu ,\sigma)$
 以及多元函数条件概率的相关公式:
 $f_{X_1, \ldots, X_n}(x_1, \ldots, x_n) = f_{X_n | X_1, \ldots, X_{n-1}}( x_n | x_1, \ldots, x_{n-1}) f_{X_1, \ldots, X_{n-1}}( x_1, \ldots, x_{n-1} ) .$
 
-## 预备知识
 
 ### MLE 算法
 
 example1:
->(MLE 的思想是想方法在参数空间内找到一个最适合的参数，使得 样本点$P(x_1,x_2,\dots|\theta_1,\theta_2,\dots)$ 出现的概率最大)
+>me:(MLE 的思想是想方法在参数空间内找到一个最适合的参数，使得 样本点$P(x_1,x_2,\dots|\theta_1,\theta_2,\dots)$ 出现的概率最大)
 >
 >(一般见到的习题上的方法(比如下面的例子)是可以构造一个方便求极值的函数，这样就可以通过直接 求 稳定点来获得极值)
 
@@ -63,7 +69,7 @@ Jensen不等式定义如下：
 
 ## EM算法
 
-### 基本的概念
+### 基本的概念和名词
 
 * 观测变量(observable variable)：
   * eg
@@ -71,7 +77,7 @@ Jensen不等式定义如下：
     * 下面例子中的随机变量Y
 * 隐变量，潜在变量 (latent vairable)
   * eg：
-    * 今天的云是什么样子。
+    * 今天的云是什么样子（没有观察）。
     * 下面随机变量Z
 * 完全数据（complete-data):Y和Z
 * 不完全数据（incomplete-data）:Y
@@ -232,8 +238,89 @@ Q(\theta^{(i+1)} ,\theta^{i})-Q(\theta^{(i)} ,\theta^{i-1})<\delta_2$$
 
 
 ## EM算法的导出
+为什么EM 算法嫩巩固近似实现对观测数据的极大似然估计呢？
+下面通过近似求解观测数据的对数似然估计函数的极大化问题来导出EM 算法。
+由此可以清楚地看出EM算法地作用 
+
+我们面对一个含有隐变量的概率模型，目标是极大化观测数据（不完全数据）Y关于参数$\theta$ 的对数似然函数，即极大化
+$$
+L(\theta)=\log{P(T\mid \theta)}=\log(\sum_{Z}P(Y,Z\mid \theta))=\log{\sum_{Z}P(Y\mid Z,\theta)P(Z\mid \theta)}
+$$ (1)
+> 上面的式子使用的知识，分别是多元密度函数和边际密度函数的转化关系。以及，条件函数$P(AB)=P(A\mid B）P(B)$
+
+注意到这一极大化的主要困难是式子（1）中含有 为观测数据并包含和（或者积分：多元-》边际，离散：求和，连续：积分） 的对数
+
+事实上，EM 算法是通过迭代逐步近似极大化$L(\theta)$。假设在第i次迭代后$\theta$的估计值是$\theta^(i)$,我们希望新股机制$\theta$能使$\L(\theta)$增大，就是$L(\theta)>L(\theta^(i))$,并且逐步达到极大值。为此，考虑两者的差
+$$
+L(\theta)-L(\theta^{(i)})=\log{\sum_{Z}P(Y\mid Z,\theta)P(Z\mid \theta)}-\log{P(Y\mid \theta^{(i)})}$$
+利用 Jensen不等式（Jensen inequality ）得到其下界。
+
+$$
+> 对 L(\theta)括号内的连加项中的每一个同时除以和乘一个P（Z\mid Y,\theta^{(i)}）
+$$
+$$
+L(\theta)-L(\theta^{(i)})=\log{\sum_{Z}P(Y\mid Z,\theta)P(Z\mid \theta)}-\log{P(Y\mid \theta^{(i)})}$$
+$$
+\log{\sum_{Z}P（Z\mid Y,\theta^{(i)}）\frac{P(Y\mid Z,\theta)P(Z\mid \theta)}{P（Z\mid Y,\theta^{(i)}）}}-\log{P(Y\mid \theta^{(i)})}$$
+
+$$
+\geq \sum_{Z}P（Z\mid Y,\theta^{(i)}）\log{\frac{P(Y\mid Z,\theta)P(Z\mid \theta)}{P（Z\mid Y,\theta^{(i)}）}}-\log{P(Y\mid \theta^{(i)})}$$
+> 通过 $\log{A}-\log{B}=log{\frac{A}{B}}$,以及$\sum_{Z}P(Z)=1$我们可以知道上面的式子可以转化为
+
+$$
+= \sum_{Z}P（Z\mid Y,\theta^{(i)}）\log{\frac{P(Y\mid Z,\theta)P(Z\mid \theta)}{P（Z\mid Y,\theta^{(i)}）\log{P(Y\mid \theta^{(i)})}}}
+$$ 
+
+然后我们把上面不等式 第一项中的$L(\theta^{(i)})$移动到式子的右边。记作$B(\theta,\theta^{(i)})$，显然不等式仍然成立
+
+$$
+令B(\theta,\theta^{(i)})=L(\theta^{i})+\sum_{Z}P（Z\mid Y,\theta^{(i)}）\log{\frac{P(Y\mid Z,\theta)P(Z\mid \theta)}{P（Z\mid Y,\theta^{(i)}）\log{P(Y\mid \theta^{(i)})}}}
+$$ （2）
+> 由于不等式仍然成立，所以可以得到
+
+$$
+L(\theta)\geq  B(\theta,\theta^{(i)})
+$$
+
+所以 函数  $B(\theta,\theta^{(i)})$是 $L(\theta)$的下界。而且通过式子 （2）可以知道，如果带入 $\theat$ = $\theta^{(i)}$
+> 等式（2）右边第二项 中 $\log{\frac{P(Y\mid Z,\theta)P(Z\mid \theta)}{P（Z\mid Y,\theta^{(i)}）\log{P(Y\mid \theta^{(i)})}}}$ 中的分子分母相同，log1=0，所以被消去
+
+$$
+L(\theta^{(i)})=B(\theta^{(i)},\theta^{(i)})
+$$
+因此，任何可以使得 $B(\theta,\theta^{(i)})$ 增大的$\theta$ ,也可以使得 $L(\theta)$增大，为了使得 $L(\theta)$尽可能地增大，选择 $theta^{(i)}$ 使得$B(\theta,\theta^{(i)})$ 达到极大。
+即
+$$
+\theta^{(i+1)}=\arg{\max_{\theta}B(\theta,\theta^{(i)})}
+$$
+
+现在 求$\theta^{(i)}$的表达式，省去对$\theta$极大化而言是常熟的项。
+> 比如$\theta^{(i)}$
+
+$$
+\theta^{(i+1)}=\arg{\max_{\theta}B(\theta,\theta^{(i)})}
+$$
+$$
+=
+\arg{\max_{\theta}L(\theta^{i})+\sum_{Z}P（Z\mid Y,\theta^{(i)}）\log{\frac{P(Y\mid Z,\theta)P(Z\mid \theta)}{P（Z\mid Y,\theta^{(i)}）\log{P(Y\mid \theta^{(i)})}}}
+}
+$$
+$$
+=
+\arg{\max_{\theta}\sum_{Z}P（Z\mid Y,\theta^{(i)}）\log{\frac{P(Y\mid Z,\theta)P(Z\mid \theta)}{1}}
+}
+$$
+> 分母中是的P由 $\theta^{i}$绝对的大小，极大化没有影响，所以都删除
 
 
-## EM 算法计算实例
-ppT
-计算器使用要熟练
+$$
+=
+\arg{\max_{\theta}\sum_{Z}P（Z\mid Y,\theta^{(i)}）\log{\frac{P(Y，Z\mid\theta)}{1}}
+}
+$$
+$$
+\arg{\max_{\theta}Q(\theta,\theta^{(i)})]}
+$$
+
+上面的式子等价于 EM 的一次迭代，就是求Q函数的极大化，，所以EM 算法是通过不断求下界的极大化逼近求解对数似然函数极大化的算法。
+
